@@ -21,15 +21,18 @@ pipeline {
         }
 
         stage('Security Scan') {
-            steps {
-                script {
-                    echo 'Running Snyk to scan for vulnerabilities...'
-                    sh 'npm install snyk --global'  // Ensure Snyk is installed
-                    sh 'snyk auth ${SNYK_TOKEN}'    // Authenticate with Snyk
-                    sh 'snyk test --severity-threshold=high'  // Scan for vulnerabilities
-                }
+    steps {
+        script {
+            echo 'Running Snyk to scan for vulnerabilities...'
+            sh 'npm install snyk --global'  // Ensure Snyk is installed
+            withCredentials([string(credentialsId: 'your-snyk-token-id', variable: 'SNYK_TOKEN')]) {
+                sh 'echo "${SNYK_TOKEN}" | snyk auth'  // Authenticate with Snyk using the token
             }
+            sh 'snyk test --severity-threshold=high'  // Scan for vulnerabilities
         }
+    }
+}
+
 
         stage('Build') {
             steps {
