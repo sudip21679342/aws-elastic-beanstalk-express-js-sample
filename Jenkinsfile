@@ -26,8 +26,8 @@ pipeline {
                     echo 'Running Snyk to scan for vulnerabilities...'
                     sh 'npm install snyk --global'  // Ensure Snyk is installed globally
 
-                    // Authenticate with Snyk using the stored token
-                    sh 'snyk auth $SNYK_TOKEN'
+                    // Authenticate with Snyk using the token directly
+                    sh 'snyk config set api=$SNYK_TOKEN'
 
                     // Run Snyk vulnerability scan
                     sh 'snyk test --severity-threshold=high'  // Scan for vulnerabilities
