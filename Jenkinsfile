@@ -2,12 +2,12 @@ pipeline {
     agent {
         docker {
             image 'node:16'        // Use Node 16 Docker image
-            args '-u root --privileged'  // Add --privileged if required for Docker permissions
+            args '-u root'  // Only use --privileged if absolutely necessary
         }
     }
 
     environment {
-        SNYK_TOKEN = credentials('c5eaa975-48ca-4ed4-aab3-3a6d3e610669') // Ensure this is the API token
+        SNYK_TOKEN = credentials('c5eaa975-48ca-4ed4-aab3-3a6d3e610669')  // Ensure this is the API token
     }
 
     stages {
@@ -15,7 +15,7 @@ pipeline {
             steps {
                 script {
                     echo 'Installing dependencies...'
-                    sh 'npm install --save'  // Install dependencies using npm
+                    sh 'npm install'  // Simplified to just npm install
                     sh 'npm install snyk --global'  // Install Snyk globally
                 }
             }
@@ -25,8 +25,15 @@ pipeline {
             steps {
                 script {
                     echo 'Running Snyk to scan for vulnerabilities...'
-                    sh 'snyk auth $SNYK_TOKEN'  // Authenticate with Snyk using the token
-                    sh 'snyk test --severity-threshold=high'  // Scan for vulnerabilities
+                    sh '''
+                    if [ -n "$SNYK_TOKEN" ]; then
+                        snyk auth $SNYK_TOKEN
+                        snyk test --severity-threshold=high
+                    else
+                        echo "Snyk token is not set!"
+                        exit 1
+                    fi
+                    '''
                 }
             }
         }
@@ -35,7 +42,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building the project...'
-                    sh 'npm run build'  // Modify as needed if you have a build step
+                    sh 'npm run build'  // Ensure you have a build script in package.json
                 }
             }
         }
@@ -44,7 +51,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running tests...'
-                    sh 'npm test'  // Run tests if any
+                    sh 'npm test'  // Standard npm test command
                 }
             }
         }
@@ -58,7 +65,10 @@ pipeline {
             echo 'Pipeline succeeded!'
         }
         failure {
-            echo 'Pipeline failed due to vulnerabilities or build/test issues!'
+            script {
+                echo 'Pipeline failed due to vulnerabilities or build/test issues!'
+                // Optional: Add a command to fetch more detailed logs if needed
+            }
         }
     }
 }
