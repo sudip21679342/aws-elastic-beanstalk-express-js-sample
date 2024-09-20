@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        SNYK_TOKEN = credentials('snyk-token')// Store your Snyk token in Jenkins credentials
+        SNYK_TOKEN = credentials('snyk-token')  // Store Snyk token in Jenkins credentials
     }
 
     stages {
@@ -21,19 +21,19 @@ pipeline {
         }
 
         stage('Security Scan') {
-    steps {
-        script {
-            echo 'Running Snyk to scan for vulnerabilities...'
-            sh 'npm install snyk --global'  // Ensure Snyk is installed globally
-            withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
-                sh 'echo "${SNYK_TOKEN}" | snyk auth'  // Authenticate with Snyk using the token
+            steps {
+                script {
+                    echo 'Running Snyk to scan for vulnerabilities...'
+                    sh 'npm install snyk --global'  // Ensure Snyk is installed globally
+
+                    // Authenticate with Snyk using the stored token
+                    sh 'snyk auth $SNYK_TOKEN'
+
+                    // Run Snyk vulnerability scan
+                    sh 'snyk test --severity-threshold=high'  // Scan for vulnerabilities
+                }
             }
-            sh 'snyk test --severity-threshold=high'  // Scan for vulnerabilities
         }
-    }
-}
-
-
 
         stage('Build') {
             steps {
