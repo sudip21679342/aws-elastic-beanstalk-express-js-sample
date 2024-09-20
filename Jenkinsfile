@@ -1,8 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'node:16'  // Use Node 16 Docker image
-            args '-u root'   // Run as root to avoid permission issues
+            image 'node:16'        // Use Node 16 Docker image
+            args '-u root'         // Run as root to avoid permission issues
         }
     }
 
@@ -26,9 +26,7 @@ pipeline {
                     echo 'Running Snyk to scan for vulnerabilities...'
                     sh 'npm install snyk --global'  // Ensure Snyk is installed
                     sh 'snyk auth ${SNYK_TOKEN}'    // Authenticate with Snyk
-                    sh 'snyk test --severity-threshold=high'  // Scan dependencies, halt on high/critical vulnerabilities
-                    // Scan for vulnerabilities, halting on high/critical issues
-                    sh 'snyk test --severity-threshold=high'
+                    sh 'snyk test --severity-threshold=high'  // Scan for vulnerabilities
                 }
             }
         }
@@ -37,7 +35,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building the project...'
-                    sh 'npm run build'   // If you have a build step, modify as needed
+                    sh 'npm run build'  // Modify as needed if you have a build step
                 }
             }
         }
@@ -46,7 +44,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running tests...'
-                    sh 'npm test'   // Run tests if you have any
+                    sh 'npm test'  // Run tests if any
                 }
             }
         }
