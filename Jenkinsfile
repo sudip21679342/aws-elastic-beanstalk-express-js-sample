@@ -1,12 +1,17 @@
 pipeline {
-    agent { docker { image 'node:16' } }
+    agent {
+        docker {
+            image 'node:16'
+            args '-u root' // Run as root
+        }
+    }
     stages {
         stage('Install dependencies') {
             steps {
                 sh 'node --version'
                 sh 'npm --version'
                 
-                // Use a custom cache directory inside the workspace
+                // Use a custom cache directory to avoid permissions issues
                 sh 'npm install --cache $(pwd)/.npm-cache --save'
                 sh 'npm install express@4.20.0 --cache $(pwd)/.npm-cache'
             }
@@ -14,15 +19,17 @@ pipeline {
         stage('Snyk Scan') {
             steps {
                 echo 'Scanning...'
+                // Install Snyk globally (since running as root)
                 sh '''
                 npm install snyk -g --cache $(pwd)/.npm-cache
-                snyk auth 7c5eaa975-48ca-4ed4-aab3-3a6d3e610669
+                snyk auth c5eaa975-48ca-4ed4-aab3-3a6d3e610669
                 snyk test --severity-threshold=high
                 '''
             }
         }
     }
 }
+
 
 
 // pipeline {
