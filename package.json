@@ -40,16 +40,15 @@
   "jest": {
     "testEnvironment": "node"
   },
-
-    "scripts": {
-    "start": "npm run prod",
-    "build": "npm run clean && babel src -d dist-server",
-    "server": "node ./dist-server/bin/www",
-    "dev": "NODE_ENV=development npm run server",
-    "prod": "NODE_ENV=production npm run server",
-    "clean": "rm -rf dist-server",
-    "watch:dev": "nodemon",
-    "test": "jest"
+"scripts": {
+  "start": "npm run prod",
+  "build": "npm run clean && babel app.js -o dist-server/app.js", // Transpile app.js
+  "server": "node ./dist-server/app.js", // run
+  "dev": "NODE_ENV=development npm run server",
+  "prod": "NODE_ENV=production npm run server",
+  "clean": "rm -rf dist-server",
+  "watch:dev": "nodemon",
+  "test": "jest"
 }
 
   }
