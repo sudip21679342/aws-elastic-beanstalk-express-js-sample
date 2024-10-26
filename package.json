@@ -42,8 +42,8 @@
   },
 "scripts": {
   "start": "npm run prod",
-  "build": "npm run clean && babel app.js -o dist-server/app.js", // Transpile app.js
-  "server": "node ./dist-server/app.js", // run
+  "build": "npm run clean && babel app.js -o dist-server/app.js",
+  "server": "node ./dist-server/app.js",
   "dev": "NODE_ENV=development npm run server",
   "prod": "NODE_ENV=production npm run server",
   "clean": "rm -rf dist-server",
